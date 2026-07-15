@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="https://envs.sh/eer.jpg" width="150" alt="banner"/>
+  <img src="https://.jpg" width="150" alt="banner"/>
 </p>
 
-<h1 align="center">✨ ReNameX Bot ✨</h1>
+<h1 align="center">✨ Renamer rdh Bot ✨</h1>
 
 <p align="center">
   A powerful Telegram bot to <b>rename</b>, <b>add thumbnails</b>, and <b>set captions</b> for your files — with clone support, broadcast, and force-subscribe.
