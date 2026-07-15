@@ -88,10 +88,11 @@ Channel     : t.me/xivasudev
 ```
 
 ---
-
 ## ⭐ Support
 
 If you found this project useful, consider giving it a star!
+
+**[👉 Click here to star this repo](https://github.com/diractory/file-rename.git)**
 
 ```
 https://github.com/diractory/file-rename.git
