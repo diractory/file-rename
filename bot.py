@@ -134,12 +134,13 @@ async def start_handler(client: Client, message: Message):
     if is_banned(message.from_user.id):
         await message.reply_text("**🚫 You are banned from using this bot.**")
         return
-    if not await is_joined(client, message.from_user.id):
-        await message.reply_text(
-            "**🔒 You must join our channels to use this bot.**",
-            reply_markup=join_markup(),
-        )
-        return
+    if getattr(client, "is_main", False):
+        if not await is_joined(client, message.from_user.id):
+            await message.reply_text(
+                "**🔒 You must join our channels to use this bot.**",
+                reply_markup=join_markup(),
+            )
+            return
     await send_start_menu(message)
 
 async def check_join_handler(client: Client, cb: CallbackQuery):
@@ -216,12 +217,13 @@ async def file_handler(client: Client, message: Message):
     if is_banned(message.from_user.id):
         await message.reply_text("**🚫 You are banned from using this bot.**")
         return
-    if not await is_joined(client, message.from_user.id):
-        await message.reply_text(
-            "**🔒 You must join our channels to use this bot.**",
-            reply_markup=join_markup(),
-        )
-        return
+    if getattr(client, "is_main", False):
+        if not await is_joined(client, message.from_user.id):
+            await message.reply_text(
+                "**🔒 You must join our channels to use this bot.**",
+                reply_markup=join_markup(),
+            )
+            return
 
     state = get_state(message.from_user.id)
     state["file"] = message
@@ -358,6 +360,11 @@ async def text_handler(client: Client, message: Message):
 
     elif state["waiting"] == "clone_token":
         state["waiting"] = None
+        if not users_col.find_one({"_id": message.from_user.id}):
+            await message.reply_text(
+                "**❗ Please start the main bot first with /start, then try cloning again.**"
+            )
+            return
         token = message.text.strip()
         status = await message.reply_text("**⏳ Starting your cloned bot...**")
         try:
@@ -368,6 +375,7 @@ async def text_handler(client: Client, message: Message):
                 bot_token=token,
                 in_memory=True,
             )
+            clone_app.is_main = False
             register_handlers(clone_app)
             await clone_app.start()
             save_clone(message.from_user.id, token)
@@ -398,6 +406,7 @@ def register_handlers(client: Client):
 
 async def main():
     bot = Client("RenameBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN, workers=100)
+    bot.is_main = True
     register_handlers(bot)
     await bot.start()
     for clone in get_all_clones():
@@ -410,6 +419,7 @@ async def main():
                 bot_token=token,
                 in_memory=True,
             )
+            clone_app.is_main = False
             register_handlers(clone_app)
             await clone_app.start()
         except Exception as e:
